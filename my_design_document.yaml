@@ -11,7 +11,7 @@ collection:
     meta:
       id: fld_05972db85b7349ad9cb03d5452cb2809
       created: 1771239032896
-      modified: 1771239032896
+      modified: 1771243460057
       sortKey: -1771239032896
       description: Product inventory operations
     children:
@@ -38,11 +38,24 @@ collection:
         meta:
           id: req_faaa249d37ff44799cfa526875c44c47
           created: 1771239032897
-          modified: 1771239032897
+          modified: 1771243458208
           isPrivate: false
           description: Retrieve a list of all products currently available in the catalog.
           sortKey: -1771239032897
         method: GET
+        scripts:
+          afterResponse: |-
+            // The error showed us that .text is a function!
+            // So we must call it with brackets ()
+            const rawBody = insomnia.response.text(); 
+
+            // Parse it
+            const body = JSON.parse(rawBody);
+
+            // Save the ID
+            insomnia.environment.set('dynamic_product_id', body[0].id);
+
+            console.log("SUCCESS! Saved ID:", body[0].id);
         settings:
           renderRequestBody: true
           encodeUrl: true
@@ -64,7 +77,7 @@ collection:
         meta:
           id: req_2b90e92169f643519e6996607444ebad
           created: 1771239032897
-          modified: 1771239680623
+          modified: 1771242540040
           isPrivate: false
           description: Add a specific product and quantity to the user's shopping cart.
           sortKey: -1771239032897
@@ -73,7 +86,7 @@ collection:
           mimeType: application/json
           text: |-
             {
-              "productId":1,
+              "productId": {{ dynamic_product_id }},
               "quantity": 1
             }
         headers:
@@ -140,13 +153,13 @@ cookieJar:
   meta:
     id: jar_1096ef8a3409c8565bfb4836565808188ac68274
     created: 1771238275310
-    modified: 1771238275310
+    modified: 1771243460055
 environments:
   name: Base Environment
   meta:
     id: env_1096ef8a3409c8565bfb4836565808188ac68274
     created: 1771238275310
-    modified: 1771239032895
+    modified: 1771243460057
     isPrivate: false
   data:
     base_url: "{{ _.scheme }}://{{ _.host }}{{ _.base_path }}"
@@ -155,7 +168,7 @@ environments:
       meta:
         id: env_d5598965d14849519e3bbccb48527c31
         created: 1771239032895
-        modified: 1771241516975
+        modified: 1771243460057
         isPrivate: false
         sortKey: 1771239032895
       data:
@@ -163,6 +176,7 @@ environments:
         base_path: ""
         host: localhost:3000
         bearerToken: my-secret-token
+        dynamic_product_id: 1
     - name: OpenAPI env mock-server:8000
       meta:
         id: env_831e2568d5554a559f4a8013c2b7bbff
@@ -333,3 +347,54 @@ spec:
     id: spc_df145328d703484c9349946590bb50c3
     created: 1771238275309
     modified: 1771240931277
+testSuites:
+  - name: Checkout Flow
+    meta:
+      id: uts_b7f3b25672ce46e8b87c043235052e14
+      created: 1771241789404
+      modified: 1771241818708
+      sortKey: -1771241789405
+    tests:
+      - name: Verify Product List
+        meta:
+          id: ut_2b23a55e1e914be99bd3873e949080da
+          created: 1771241818815
+          modified: 1771242585723
+          sortKey: -1771241818815
+        requestId: req_faaa249d37ff44799cfa526875c44c47
+        code: |-
+          const response = await insomnia.send();
+
+          // 1. Check Status Code
+          expect(response.status).to.equal(200);
+
+          // 2. Check Data Type
+          const body = JSON.parse(response.data);
+          expect(body).to.be.an('array');
+
+          // 3. Check Content
+          expect(body[0]).to.have.property('name');
+          expect(body[0].price).to.be.above(0);
+      - name: Add to Cart
+        meta:
+          id: ut_a23a2f9b380d42688b821f7b3e84f6e1
+          created: 1771242595847
+          modified: 1771242827679
+          sortKey: -1771242595847
+        requestId: req_2b90e92169f643519e6996607444ebad
+        code: |-
+          // You must send the request first!
+          const response = await insomnia.send(); 
+          expect(response.status).to.equal(201);
+      - name: Place an order
+        meta:
+          id: ut_ee56048153024bf1ae63d6dcb21e6660
+          created: 1771242596169
+          modified: 1771242820800
+          sortKey: -1771242596170
+        requestId: req_e3089d2cf0244646ace12cd958681d73
+        code: |-
+          // You must send the request first!
+          const response = await insomnia.send();
+
+          expect(response.status).to.equal(201);
