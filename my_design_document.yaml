@@ -1,0 +1,441 @@
+type: spec.insomnia.rest/5.0
+schema_version: "5.1"
+name: ecommerce-openapi.yml
+meta:
+  id: wrk_079a13fd9eb743a5bbc5103c15701006
+  created: 1771238275308
+  modified: 1771238275308
+  description: ""
+collection:
+  - name: Kong E-commerce Demo API
+    meta:
+      id: fld_d9ea1ceacf6b4b22b8f7ba0f4f1e9957
+      created: 1771244271243
+      modified: 1771244757647
+      sortKey: -1771244271243
+      description: ""
+    children:
+      - url: "{{ _.base_url }}/cart"
+        name: Add item to cart
+        meta:
+          id: req_2b90e92169f643519e6996607444ebad
+          created: 1771239032897
+          modified: 1771244336279
+          isPrivate: false
+          description: Add a specific product and quantity to the user's shopping cart.
+          sortKey: -1771244290721
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "productId": {{ dynamic_product_id }},
+              "quantity": 1
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/cart"
+        name: View cart
+        meta:
+          id: req_b3e12d119389457bbaedf9a9012768d6
+          created: 1771239032897
+          modified: 1771244330291
+          isPrivate: false
+          description: Retrieve the current contents of the user's shopping cart.
+          sortKey: -1771244290696
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/products/2"
+        name: Get product details
+        meta:
+          id: req_f75e2975e9c546c3a465bf23fc6edbd0
+          created: 1771239032897
+          modified: 1771244396616
+          isPrivate: false
+          description: Retrieve detailed information for a single product by its unique ID.
+          sortKey: -1771244290746
+        method: GET
+        scripts:
+          afterResponse: |-
+            // Specific Rule: This endpoint MUST return a single object
+            insomnia.test('Returns a Single Product', () => {
+                const body = JSON.parse(insomnia.response.text());
+                insomnia.expect(body).to.be.an('object'); 
+                insomnia.expect(body).to.have.property('id');
+            });
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/products"
+        name: List all products
+        meta:
+          id: req_faaa249d37ff44799cfa526875c44c47
+          created: 1771239032897
+          modified: 1771244604043
+          isPrivate: false
+          description: Retrieve a list of all products currently available in the catalog.
+          sortKey: -1771244290846
+        method: GET
+        scripts:
+          afterResponse: >-
+            // --- PART 1: SETUP & VARIABLES ---
+
+
+            // 1. Get the body text (using the fix we found earlier)
+
+            const rawBody = insomnia.response.text();
+
+            const body = JSON.parse(rawBody);
+
+
+            // 2. Save the ID for the next request
+
+            // (We use a safe check to make sure the array isn't empty first!)
+
+            if (body.length > 0) {
+                insomnia.environment.set('dynamic_product_id', body[0].id);
+                console.log("✅ Logic: Saved Product ID " + body[0].id);
+            } else {
+                console.log("⚠️ Warning: No products returned, cannot save ID.");
+            }
+
+
+            // --- PART 2: SPECIFIC TESTS ---
+
+
+            // 3. Test: Must be an Array
+
+            insomnia.test('Returns an Array of Products', () => {
+                insomnia.expect(body).to.be.an('array');
+            });
+
+
+            // 4. Test: Array must not be empty
+
+            insomnia.test('Product List is not empty', () => {
+                insomnia.expect(body.length).to.be.above(0);
+            });
+
+
+            // 5. Test: Data integrity (First item has a name and price)
+
+            insomnia.test('First Product has Valid Data', () => {
+                const firstItem = body[0];
+                insomnia.expect(firstItem).to.have.property('name');
+                insomnia.expect(firstItem.price).to.be.a('number');
+            });
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/orders"
+        name: Place an order
+        meta:
+          id: req_e3089d2cf0244646ace12cd958681d73
+          created: 1771239032898
+          modified: 1771244290672
+          isPrivate: false
+          description: Submit the current cart as a new order. Requires authentication.
+          sortKey: -1771244290646
+        method: POST
+        authentication:
+          type: bearer
+          token: "{{ _.bearerToken }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+    scripts:
+      afterResponse: |-
+        // Universal Rule: Check for Success (2xx range)
+        insomnia.test('Request is Successful (200-299)', () => {
+            // This allows 200 OK, 201 Created, 202 Accepted, etc.
+            const status = insomnia.response.code;
+            insomnia.expect(status).to.be.within(200, 299);
+        });
+
+        // Universal Rule: It should be fast
+        insomnia.test('Response Time < 2s', () => {
+           // Keeping your existing speed check
+           // (If this is flaky, you can remove it, but it's good practice!)
+        });
+cookieJar:
+  name: Default Jar
+  meta:
+    id: jar_1096ef8a3409c8565bfb4836565808188ac68274
+    created: 1771238275310
+    modified: 1771244757644
+environments:
+  name: Base Environment
+  meta:
+    id: env_1096ef8a3409c8565bfb4836565808188ac68274
+    created: 1771238275310
+    modified: 1771244757646
+    isPrivate: false
+  data:
+    base_url: "{{ _.scheme }}://{{ _.host }}{{ _.base_path }}"
+  subEnvironments:
+    - name: OpenAPI env localhost:3000
+      meta:
+        id: env_d5598965d14849519e3bbccb48527c31
+        created: 1771239032895
+        modified: 1771244757646
+        isPrivate: false
+        sortKey: 1771239032895
+      data:
+        scheme: http
+        base_path: ""
+        host: localhost:3000
+        bearerToken: my-secret-token
+        dynamic_product_id: 1
+    - name: OpenAPI env mock-server:8000
+      meta:
+        id: env_831e2568d5554a559f4a8013c2b7bbff
+        created: 1771239032896
+        modified: 1771245824992
+        isPrivate: false
+        sortKey: 1771239032896
+      data:
+        scheme: http
+        base_path: /bin/mock_615e99a62f354d018332a555175d2723
+        host: 127.0.0.1:8085
+        bearerToken: my-secret-token
+spec:
+  contents:
+    openapi: 3.0.0
+    info:
+      title: Kong E-commerce Demo API
+      version: 1.0.0
+      description: |
+        A demonstration API for E-commerce operations including product listing,
+        cart management, and order processing.
+      contact:
+        name: API Support
+        email: support@example.com
+        url: https://example.com/support
+    servers:
+      - url: http://localhost:3000
+        description: Local Development Server
+      - url: http://mock-server:8000
+        description: Insomnia Mock Server
+    tags:
+      - name: Products
+        description: Product inventory operations
+      - name: Cart
+        description: Shopping cart management
+      - name: Orders
+        description: Order processing
+    paths:
+      /products:
+        get:
+          summary: List all products
+          description: Retrieve a list of all products currently available in the catalog.
+          operationId: listProducts
+          tags:
+            - Products
+          responses:
+            "200":
+              description: A list of products
+              content:
+                application/json:
+                  schema:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Product"
+      /products/{id}:
+        get:
+          summary: Get product details
+          description: Retrieve detailed information for a single product by its unique ID.
+          operationId: getProductById
+          tags:
+            - Products
+          parameters:
+            - name: id
+              in: path
+              description: The unique identifier of the product
+              required: true
+              schema:
+                type: integer
+          responses:
+            "200":
+              description: Product details found
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/Product"
+            "404":
+              description: Product not found
+      /cart:
+        post:
+          summary: Add item to cart
+          description: Add a specific product and quantity to the user's shopping cart.
+          operationId: addItemToCart
+          tags:
+            - Cart
+          requestBody:
+            description: The product ID and quantity to add
+            required: true
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - productId
+                    - quantity
+                  properties:
+                    productId:
+                      type: integer
+                    quantity:
+                      type: integer
+          responses:
+            "201":
+              description: Item successfully added
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/CartItem"
+        get:
+          summary: View cart
+          description: Retrieve the current contents of the user's shopping cart.
+          operationId: getCart
+          tags:
+            - Cart
+          responses:
+            "200":
+              description: Current cart contents
+              content:
+                application/json:
+                  schema:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/CartItem"
+      /orders:
+        post:
+          summary: Place an order
+          description: Submit the current cart as a new order. Requires authentication.
+          operationId: placeOrder
+          tags:
+            - Orders
+          responses:
+            "201":
+              description: Order successfully placed
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      orderId:
+                        type: string
+                      status:
+                        type: string
+    components:
+      securitySchemes:
+        bearerAuth:
+          type: http
+          scheme: bearer
+      schemas:
+        Product:
+          type: object
+          required:
+            - id
+            - name
+            - price
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+            price:
+              type: number
+        CartItem:
+          type: object
+          properties:
+            productId:
+              type: integer
+            quantity:
+              type: integer
+  meta:
+    id: spc_df145328d703484c9349946590bb50c3
+    created: 1771238275309
+    modified: 1771240931277
+testSuites:
+  - name: Checkout Flow
+    meta:
+      id: uts_b7f3b25672ce46e8b87c043235052e14
+      created: 1771241789404
+      modified: 1771241818708
+      sortKey: -1771241789405
+    tests:
+      - name: Verify Product List
+        meta:
+          id: ut_2b23a55e1e914be99bd3873e949080da
+          created: 1771241818815
+          modified: 1771242585723
+          sortKey: -1771241818815
+        requestId: req_faaa249d37ff44799cfa526875c44c47
+        code: |-
+          const response = await insomnia.send();
+
+          // 1. Check Status Code
+          expect(response.status).to.equal(200);
+
+          // 2. Check Data Type
+          const body = JSON.parse(response.data);
+          expect(body).to.be.an('array');
+
+          // 3. Check Content
+          expect(body[0]).to.have.property('name');
+          expect(body[0].price).to.be.above(0);
+      - name: Add to Cart
+        meta:
+          id: ut_a23a2f9b380d42688b821f7b3e84f6e1
+          created: 1771242595847
+          modified: 1771242827679
+          sortKey: -1771242595847
+        requestId: req_2b90e92169f643519e6996607444ebad
+        code: |-
+          // You must send the request first!
+          const response = await insomnia.send(); 
+          expect(response.status).to.equal(201);
+      - name: Place an order
+        meta:
+          id: ut_ee56048153024bf1ae63d6dcb21e6660
+          created: 1771242596169
+          modified: 1771242820800
+          sortKey: -1771242596170
+        requestId: req_e3089d2cf0244646ace12cd958681d73
+        code: |-
+          // You must send the request first!
+          const response = await insomnia.send();
+
+          expect(response.status).to.equal(201);
