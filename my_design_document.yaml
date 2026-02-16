@@ -1,0 +1,181 @@
+type: spec.insomnia.rest/5.0
+schema_version: "5.1"
+name: ecommerce-openapi.yml
+meta:
+  id: wrk_079a13fd9eb743a5bbc5103c15701006
+  created: 1771238275308
+  modified: 1771238275308
+  description: ""
+cookieJar:
+  name: Default Jar
+  meta:
+    id: jar_1096ef8a3409c8565bfb4836565808188ac68274
+    created: 1771238275310
+    modified: 1771238275310
+environments:
+  name: Base Environment
+  meta:
+    id: env_1096ef8a3409c8565bfb4836565808188ac68274
+    created: 1771238275310
+    modified: 1771238275310
+    isPrivate: false
+spec:
+  contents:
+    openapi: 3.0.0
+    info:
+      title: Kong E-commerce Demo API
+      version: 1.0.0
+      description: |
+        A demonstration API for E-commerce operations including product listing,
+        cart management, and order processing.
+      contact:
+        name: API Support
+        email: support@example.com
+        url: https://example.com/support
+    servers:
+      - url: http://localhost:3000
+        description: Local Development Server
+      - url: http://mock-server:8000
+        description: Insomnia Mock Server
+    tags:
+      - name: Products
+        description: Product inventory operations
+      - name: Cart
+        description: Shopping cart management
+      - name: Orders
+        description: Order processing
+    paths:
+      /products:
+        get:
+          summary: List all products
+          description: Retrieve a list of all products currently available in the catalog.
+          operationId: listProducts
+          tags:
+            - Products
+          responses:
+            "200":
+              description: A list of products
+              content:
+                application/json:
+                  schema:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Product"
+      /products/{id}:
+        get:
+          summary: Get product details
+          description: Retrieve detailed information for a single product by its unique ID.
+          operationId: getProductById
+          tags:
+            - Products
+          parameters:
+            - name: id
+              in: path
+              description: The unique identifier of the product
+              required: true
+              schema:
+                type: integer
+          responses:
+            "200":
+              description: Product details found
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/Product"
+            "404":
+              description: Product not found
+      /cart:
+        post:
+          summary: Add item to cart
+          description: Add a specific product and quantity to the user's shopping cart.
+          operationId: addItemToCart
+          tags:
+            - Cart
+          requestBody:
+            description: The product ID and quantity to add
+            required: true
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - productId
+                    - quantity
+                  properties:
+                    productId:
+                      type: integer
+                    quantity:
+                      type: integer
+          responses:
+            "201":
+              description: Item successfully added
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/CartItem"
+        get:
+          summary: View cart
+          description: Retrieve the current contents of the user's shopping cart.
+          operationId: getCart
+          tags:
+            - Cart
+          responses:
+            "200":
+              description: Current cart contents
+              content:
+                application/json:
+                  schema:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/CartItem"
+      /orders:
+        post:
+          summary: Place an order
+          description: Submit the current cart as a new order. Requires authentication.
+          operationId: placeOrder
+          tags:
+            - Orders
+          responses:
+            "201":
+              description: Order successfully placed
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      orderId:
+                        type: string
+                      status:
+                        type: string
+            "401":
+              description: Unauthorized request
+    components:
+      securitySchemes:
+        bearerAuth:
+          type: http
+          scheme: bearer
+      schemas:
+        Product:
+          type: object
+          required:
+            - id
+            - name
+            - price
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+            price:
+              type: number
+        CartItem:
+          type: object
+          properties:
+            productId:
+              type: integer
+            quantity:
+              type: integer
+  meta:
+    id: spc_df145328d703484c9349946590bb50c3
+    created: 1771238275309
+    modified: 1771238961241
