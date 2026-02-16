@@ -6,6 +6,135 @@ meta:
   created: 1771238275308
   modified: 1771238275308
   description: ""
+collection:
+  - name: Products
+    meta:
+      id: fld_05972db85b7349ad9cb03d5452cb2809
+      created: 1771239032896
+      modified: 1771239032896
+      sortKey: -1771239032896
+      description: Product inventory operations
+    children:
+      - url: "{{ _.base_url }}/products/1"
+        name: Get product details
+        meta:
+          id: req_f75e2975e9c546c3a465bf23fc6edbd0
+          created: 1771239032897
+          modified: 1771239615101
+          isPrivate: false
+          description: Retrieve detailed information for a single product by its unique ID.
+          sortKey: -1771239032897
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/products"
+        name: List all products
+        meta:
+          id: req_faaa249d37ff44799cfa526875c44c47
+          created: 1771239032897
+          modified: 1771239032897
+          isPrivate: false
+          description: Retrieve a list of all products currently available in the catalog.
+          sortKey: -1771239032897
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Cart
+    meta:
+      id: fld_0c14bcec91ab486aa1431cc78f67d349
+      created: 1771239032896
+      modified: 1771239032896
+      sortKey: -1771239032896
+      description: Shopping cart management
+    children:
+      - url: "{{ _.base_url }}/cart"
+        name: Add item to cart
+        meta:
+          id: req_2b90e92169f643519e6996607444ebad
+          created: 1771239032897
+          modified: 1771239680623
+          isPrivate: false
+          description: Add a specific product and quantity to the user's shopping cart.
+          sortKey: -1771239032897
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "productId":1,
+              "quantity": 1
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/cart"
+        name: View cart
+        meta:
+          id: req_b3e12d119389457bbaedf9a9012768d6
+          created: 1771239032897
+          modified: 1771239032897
+          isPrivate: false
+          description: Retrieve the current contents of the user's shopping cart.
+          sortKey: -1771239032897
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Orders
+    meta:
+      id: fld_e5c81d6bf6f74436a6a1dd6023539ed3
+      created: 1771239032896
+      modified: 1771239032896
+      sortKey: -1771239032896
+      description: Order processing
+    children:
+      - url: "{{ _.base_url }}/orders"
+        name: Place an order
+        meta:
+          id: req_e3089d2cf0244646ace12cd958681d73
+          created: 1771239032898
+          modified: 1771241563269
+          isPrivate: false
+          description: Submit the current cart as a new order. Requires authentication.
+          sortKey: -1771239032898
+        method: POST
+        authentication:
+          type: bearer
+          token: "{{ _.bearerToken }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
 cookieJar:
   name: Default Jar
   meta:
@@ -17,8 +146,35 @@ environments:
   meta:
     id: env_1096ef8a3409c8565bfb4836565808188ac68274
     created: 1771238275310
-    modified: 1771238275310
+    modified: 1771239032895
     isPrivate: false
+  data:
+    base_url: "{{ _.scheme }}://{{ _.host }}{{ _.base_path }}"
+  subEnvironments:
+    - name: OpenAPI env localhost:3000
+      meta:
+        id: env_d5598965d14849519e3bbccb48527c31
+        created: 1771239032895
+        modified: 1771241516975
+        isPrivate: false
+        sortKey: 1771239032895
+      data:
+        scheme: http
+        base_path: ""
+        host: localhost:3000
+        bearerToken: my-secret-token
+    - name: OpenAPI env mock-server:8000
+      meta:
+        id: env_831e2568d5554a559f4a8013c2b7bbff
+        created: 1771239032896
+        modified: 1771239032896
+        isPrivate: false
+        sortKey: 1771239032896
+      data:
+        scheme: http
+        base_path: ""
+        host: mock-server:8000
+        bearerToken: bearerToken
 spec:
   contents:
     openapi: 3.0.0
@@ -147,8 +303,6 @@ spec:
                         type: string
                       status:
                         type: string
-            "401":
-              description: Unauthorized request
     components:
       securitySchemes:
         bearerAuth:
@@ -178,4 +332,4 @@ spec:
   meta:
     id: spc_df145328d703484c9349946590bb50c3
     created: 1771238275309
-    modified: 1771238961241
+    modified: 1771240931277
