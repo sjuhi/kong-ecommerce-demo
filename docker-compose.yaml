@@ -1,0 +1,17 @@
+services:
+  # The engine that stores and serves your mock routes
+  ecommerce-mock-engine:
+    image: ghcr.io/kong/insomnia-mockbin:v2.0.2
+    container_name: ecommerce-mock-bin
+    ports:
+      - "8080:8080"
+    environment:
+      MOCKBIN_REDIS: "redis://redis:6379"
+      MOCKBIN_PORT: "8080"
+    depends_on:
+      - redis
+
+  # Required database to store the mock definitions
+  redis:
+    image: redis:alpine
+    container_name: ecommerce-redis
