@@ -222,14 +222,14 @@ environments:
       meta:
         id: env_831e2568d5554a559f4a8013c2b7bbff
         created: 1771239032896
-        modified: 1771239032896
+        modified: 1771245824992
         isPrivate: false
         sortKey: 1771239032896
       data:
         scheme: http
-        base_path: ""
-        host: mock-server:8000
-        bearerToken: bearerToken
+        base_path: /bin/mock_615e99a62f354d018332a555175d2723
+        host: 127.0.0.1:8085
+        bearerToken: my-secret-token
 spec:
   contents:
     openapi: 3.0.0
