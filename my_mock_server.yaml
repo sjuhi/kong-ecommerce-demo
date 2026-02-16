@@ -1,0 +1,144 @@
+type: mock.insomnia.rest/5.0
+schema_version: "5.1"
+name: ECommerce Mock Server
+meta:
+  id: wrk_11d4dfb11a8946b6b4110e5d83471714
+  created: 1771244945101
+  modified: 1771250663675
+  description: ""
+server:
+  meta:
+    id: mock_615e99a62f354d018332a555175d2723
+    created: 1771244945104
+    modified: 1771250663675
+  url: http://localhost:8080
+  useInsomniaCloud: false
+routes:
+  - name: /products
+    meta:
+      id: mock-route_735b698c180d43abacb75690eb5602dd
+      created: 1771244959322
+      modified: 1771245859007
+    body: '[{"id":1,"name":"Kong T-Shirt","price":25},{"id":2,"name":"Insomnia
+      Sticker Pack","price":5},{"id":3,"name":"API Gateway Hoodie","price":50}]'
+    headers:
+      - name: X-Powered-By
+        value: Express
+      - name: Access-Control-Allow-Origin
+        value: "*"
+      - name: Content-Type
+        value: application/json; charset=utf-8
+      - name: ETag
+        value: W/"8d-8sbzM94+HLBG57xP8JCNvLcgif4"
+      - name: Date
+        value: Mon, 16 Feb 2026 12:25:50 GMT
+      - name: Connection
+        value: keep-alive
+      - name: Keep-Alive
+        value: timeout=5
+    method: GET
+    mimeType: application/json
+    statusCode: 200
+    statusText: ""
+  - name: /products/{id}
+    meta:
+      id: mock-route_fec27cf2045a4432a484d0a1f59bc37d
+      created: 1771244959327
+      modified: 1771245023052
+    body: '{"id":2,"name":"Insomnia Sticker Pack","price":5}'
+    headers:
+      - name: X-Powered-By
+        value: Express
+      - name: Access-Control-Allow-Origin
+        value: "*"
+      - name: Content-Type
+        value: application/json; charset=utf-8
+      - name: ETag
+        value: W/"31-8CKSw90JCrK9p9/IyrKXD5K/GsM"
+      - name: Date
+        value: Mon, 16 Feb 2026 12:25:52 GMT
+      - name: Connection
+        value: keep-alive
+      - name: Keep-Alive
+        value: timeout=5
+    method: GET
+    mimeType: application/json
+    statusCode: 200
+    statusText: ""
+  - name: /cart
+    meta:
+      id: mock-route_8d733339c877499c8bc8128806d6db72
+      created: 1771244959329
+      modified: 1771245029867
+    body: '{"message":"Added to cart","cart":[{"productId":1,"name":"Kong
+      T-Shirt","quantity":1,"price":25}]}'
+    headers:
+      - name: X-Powered-By
+        value: Express
+      - name: Access-Control-Allow-Origin
+        value: "*"
+      - name: Content-Type
+        value: application/json; charset=utf-8
+      - name: ETag
+        value: W/"62-vGTByyw8IQKOlY33l64s7oIwID8"
+      - name: Date
+        value: Mon, 16 Feb 2026 12:25:54 GMT
+      - name: Connection
+        value: keep-alive
+      - name: Keep-Alive
+        value: timeout=5
+    method: POST
+    mimeType: application/json
+    statusCode: 201
+    statusText: ""
+  - name: /cart
+    meta:
+      id: mock-route_54ba0d82447c417b81a170083e65b8f6
+      created: 1771244959331
+      modified: 1771245034502
+    body: '[{"productId":1,"name":"Kong T-Shirt","quantity":1,"price":25}]'
+    headers:
+      - name: X-Powered-By
+        value: Express
+      - name: Access-Control-Allow-Origin
+        value: "*"
+      - name: Content-Type
+        value: application/json; charset=utf-8
+      - name: ETag
+        value: W/"3f-6Dgx3or89HuiMVv0UuGeNX8rUVs"
+      - name: Date
+        value: Mon, 16 Feb 2026 12:23:40 GMT
+      - name: Connection
+        value: keep-alive
+      - name: Keep-Alive
+        value: timeout=5
+    method: GET
+    mimeType: application/json
+    statusCode: 200
+    statusText: ""
+  - name: /orders
+    meta:
+      id: mock-route_7bf64aec70174691849fa89bf6a27504
+      created: 1771244959333
+      modified: 1771245038868
+    body: '{"orderId":"927e06d3-c626-4f70-9cd6-32513b7f7288","items":[{"productId":1,"name":"Kong
+      T-Shirt","quantity":1,"price":25}],"total":25,"status":"PAID","timestamp":"2026-02-16T12:25:57.632Z"}'
+    headers:
+      - name: X-Powered-By
+        value: Express
+      - name: Access-Control-Allow-Origin
+        value: "*"
+      - name: Content-Type
+        value: application/json; charset=utf-8
+      - name: ETag
+        value: W/"bc-NwH4l8NYYKWLIrxvgcR1tv8f9VE"
+      - name: Date
+        value: Mon, 16 Feb 2026 12:25:57 GMT
+      - name: Connection
+        value: keep-alive
+      - name: Keep-Alive
+        value: timeout=5
+    method: POST
+    mimeType: application/json
+    statusCode: 201
+    statusText: ""
